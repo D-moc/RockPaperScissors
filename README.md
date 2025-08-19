@@ -20,4 +20,4 @@ A simple **Rock–Paper–Scissors game** built with **HTML, CSS, and JavaScript
 
 ---
 
-👨‍💻 By [D-moc](https://github.com/d-moc)  
+👨‍💻 Developed with ❤️ by [D-moc](https://github.com/d-moc)  

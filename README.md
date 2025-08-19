@@ -2,9 +2,7 @@
 
 A simple **Rock–Paper–Scissors game** built with **HTML, CSS, and JavaScript**.
 
-<br>
-
- [Click Here To Play](https://d-moc.github.io/RockPaperScissors/)
+[Click Here To Play](https://d-moc.github.io/RockPaperScissors/)
 
 ---
 

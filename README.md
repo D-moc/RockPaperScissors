@@ -1,10 +1,12 @@
+👉 [Play the Game Here](https://d-moc.github.io/RockPaperScissors/)
+
 # 🎮 Rock Paper Scissors
 
 A simple **Rock–Paper–Scissors game** built with **HTML, CSS, and JavaScript**.
 
 <br>
-## 👉 [Play Here](https://d-moc.github.io/RockPaperScissors/)
-<br>
+
+👉 [Play Here](https://d-moc.github.io/RockPaperScissors/)
 
 
 ---

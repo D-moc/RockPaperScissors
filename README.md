@@ -1,23 +1,29 @@
-# 🎮 Rock Paper Scissors  
+# 🎮 Rock Paper Scissors
 
-A simple **Rock–Paper–Scissors game** built with **HTML, CSS, and JavaScript**.  
-👉 [Play Here](https://d-moc.github.io/RockPaperScissors/)  
+A simple **Rock–Paper–Scissors game** built with **HTML, CSS, and JavaScript**.
 
----
+<br>
+## 👉 [Play Here](https://d-moc.github.io/RockPaperScissors/)
+<br>
 
-## ✨ Features  
-- 🪨📄✂️ Classic gameplay  
-- 🤖 Computer opponent  
-- 🔊 Sound effects  
-- 🎨 Minimal UI  
 
 ---
 
-## 🚀 How to Play  
-1. Pick Rock, Paper, or Scissors.  
-2. Computer makes a move.  
-3. See who wins!  
+## ✨ Features
+
+- 🪨📄✂️ Classic gameplay
+- 🤖 Computer opponent
+- 🔊 Sound effects
+- 🎨 Minimal UI
 
 ---
 
-👨‍💻 Developed with ❤️ by [D-moc](https://github.com/d-moc)  
+## 🚀 How to Play
+
+1. Pick Rock, Paper, or Scissors.
+2. Computer makes a move.
+3. See who wins!
+
+---
+
+👨‍💻 Developed with ❤️ by [D-moc](https://github.com/d-moc)

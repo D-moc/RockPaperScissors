@@ -1,26 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Rock, Paper, Scissors</title>
-    <script src="script.js" defer></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rock • Paper • Scissors</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;600&family=PT+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
     <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
   </head>
 
   <body>
-    <h3 id="title-small">Rock Paper Scissors</h3>
-    <div class="main-container">
-      <span class="status-head-wrapper">
-        <h1 id="status-head"></h1>
-      </span>
-      <div class="move-display">
-        <h2></h2>
-        <h2></h2>
-      </div>
-      <div class="game-button-wrapper">
-        <button id="rock-button" type="button"></button>
-        <button id="paper-button" type="button"></button>
-        <button id="scissors-button" type="button"></button>
-      </div>
-    </div>
+    <main class="wrap">
+      <header class="topbar">
+        <h1 class="app-title" aria-label="Rock Paper Scissors">
+          <span>Rock</span> <span>Paper</span> <span>Scissors</span>
+        </h1>
+
+        <div class="controls">
+          <label class="select">
+            <span>Best of</span>
+            <select id="bestOf" aria-label="Select best-of rounds">
+              <option value="3">3</option>
+              <option value="5" selected>5</option>
+              <option value="7">7</option>
+              <option value="9">9</option>
+            </select>
+          </label>
+
+          <label class="toggle" aria-label="Sound toggle">
+            <input id="soundToggle" type="checkbox" checked />
+            <span class="track"><span class="thumb"></span></span>
+            <span class="toggle-label">Sound</span>
+          </label>
+
+          <button
+            id="resetBtn"
+            class="ghost"
+            type="button"
+            aria-label="Reset game"
+          >
+            ⟲ Reset
+          </button>
+        </div>
+      </header>
+
+      <section class="scoreboard" aria-live="polite" aria-atomic="true">
+        <div class="score you">
+          <span class="label">You</span>
+          <span class="value" id="youScore">0</span>
+        </div>
+        <div class="status">
+          <p id="statusHead" class="status-text">Make your move!</p>
+          <p id="miniStatus" class="mini">
+            First to <span id="firstTo">5</span> wins.
+          </p>
+        </div>
+        <div class="score cpu">
+          <span class="label">CPU</span>
+          <span class="value" id="cpuScore">0</span>
+        </div>
+      </section>
+
+      <section class="moves">
+        <div class="move-card you">
+          <h2>You</h2>
+          <div id="youMove" class="move-emoji">—</div>
+        </div>
+        <div class="vs">VS</div>
+        <div class="move-card cpu">
+          <h2>CPU</h2>
+          <div id="cpuMove" class="move-emoji">—</div>
+        </div>
+      </section>
+
+      <section class="btns" aria-label="Choose your move">
+        <button class="btn move" data-move="rock" id="rockBtn" type="button">
+          <span class="emoji" aria-hidden="true">✊</span>
+          <span class="txt">Rock</span>
+          <kbd class="hint">R</kbd>
+        </button>
+
+        <button class="btn move" data-move="paper" id="paperBtn" type="button">
+          <span class="emoji" aria-hidden="true">✋</span>
+          <span class="txt">Paper</span>
+          <kbd class="hint">P</kbd>
+        </button>
+
+        <button
+          class="btn move"
+          data-move="scissors"
+          id="scissorsBtn"
+          type="button"
+        >
+          <span class="emoji" aria-hidden="true">✌️</span>
+          <span class="txt">Scissors</span>
+          <kbd class="hint">S</kbd>
+        </button>
+      </section>
+
+      <section class="history">
+        <h3>Round History</h3>
+        <ol id="historyList" class="list" aria-live="polite"></ol>
+      </section>
+
+      <footer class="foot">
+        <p>
+          Tip: use your keyboard — <strong>R</strong> / <strong>P</strong> /
+          <strong>S</strong>
+        </p>
+      </footer>
+    </main>
+
+    <!-- lightweight sound sprites -->
+    <audio id="sWin" preload="auto">
+      <source
+        src="audio/winaudio.mp3"
+        type="audio/mp3"
+      />
+    </audio>
+    <audio id="sLose" preload="auto">
+      <source
+        src="audio/loseaudio.mp3"
+        type="audio/mp3"
+      />
+    </audio>
+    <audio id="sTie" preload="auto">
+      <source
+        src="audio/tieaudio.mp3"
+        type="audio/mp3"
+      />
+    </audio>
   </body>
 </html>

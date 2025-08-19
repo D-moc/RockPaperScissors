@@ -1,121 +1,206 @@
-// Map moves to what they beat
-const beats = {
-  rock: "scissors",
-  paper: "rock",
-  scissors: "paper",
-};
+// --- Game Setup ---
+const beats = { rock: "scissors", paper: "rock", scissors: "paper" };
 
 let playerScore = 0;
 let computerScore = 0;
-const WINNING_SCORE = 5;
+let winningScore = 5; // default "best of 5"
+let gameOver = false;
 
-const statusHead = document.getElementById("status-head");
-const moveDisplay = document.querySelector(".move-display");
-const [playerMoveEl, computerMoveEl] = moveDisplay.querySelectorAll("h2");
+const youScoreEl = document.getElementById("youScore");
+const cpuScoreEl = document.getElementById("cpuScore");
+const statusHead = document.getElementById("statusHead");
+const miniStatus = document.getElementById("miniStatus");
+const firstToEl = document.getElementById("firstTo");
 
-const rockBtn = document.getElementById("rock-button");
-const paperBtn = document.getElementById("paper-button");
-const scissorsBtn = document.getElementById("scissors-button");
+const youMoveEl = document.getElementById("youMove");
+const cpuMoveEl = document.getElementById("cpuMove");
 
-// Initialize button labels
-rockBtn.textContent = "✊ Rock";
-paperBtn.textContent = "✋ Paper";
-scissorsBtn.textContent = "✌️ Scissors";
+const bestOfSel = document.getElementById("bestOf");
+const soundToggle = document.getElementById("soundToggle");
+const resetBtn = document.getElementById("resetBtn");
+const historyList = document.getElementById("historyList");
 
-// Utility: random choice for computer
+const btnRock = document.getElementById("rockBtn");
+const btnPaper = document.getElementById("paperBtn");
+const btnScissors = document.getElementById("scissorsBtn");
+
+// sounds (tiny silent placeholders in HTML; swap with your own if you like)
+const sWin  = document.getElementById("sWin");
+const sLose = document.getElementById("sLose");
+const sTie  = document.getElementById("sTie");
+
+// --- Utilities ---
+function randChoice(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
 function getComputerChoice() {
-  const options = Object.keys(beats);
-  return options[Math.floor(Math.random() * options.length)];
+  return randChoice(Object.keys(beats));
 }
 
-// Update the status headline (score)
-function updateStatus() {
-  statusHead.textContent = `You: ${playerScore}   CPU: ${computerScore}`;
+function formatMove(m) {
+  return m === "rock" ? "✊ Rock" : m === "paper" ? "✋ Paper" : "✌️ Scissors";
 }
 
-// Show the chosen moves
-function showMoves(player, computer) {
-  playerMoveEl.textContent = `You: ${formatMove(player)}`;
-  computerMoveEl.textContent = `CPU: ${formatMove(computer)}`;
-}
-
-// Helper to get emoji + name
-function formatMove(move) {
-  switch (move) {
-    case "rock":
-      return "✊ Rock";
-    case "paper":
-      return "✋ Paper";
-    case "scissors":
-      return "✌️ Scissors";
-    default:
-      return move;
+function playSound(type) {
+  if (!soundToggle.checked) return;
+  const map = { win: sWin, lose: sLose, tie: sTie };
+  const el = map[type];
+  if (el) {
+    el.currentTime = 0;
+    el.play().catch(() => {});
   }
 }
 
-// Decide round outcome
-function playRound(playerChoice) {
-  if (playerScore >= WINNING_SCORE || computerScore >= WINNING_SCORE) {
-    // Game already ended; ignore until reset
-    return;
-  }
+function updateScoreboard() {
+  youScoreEl.textContent = playerScore;
+  cpuScoreEl.textContent = computerScore;
+}
 
-  const computerChoice = getComputerChoice();
+function setStatus(text, sub = null) {
+  statusHead.textContent = text;
+  if (sub !== null) miniStatus.innerHTML = sub;
+}
 
-  showMoves(playerChoice, computerChoice);
+function flash(el, cls) {
+  el.classList.remove("flash-win", "flash-lose", "flash-tie", "pulse");
+  void el.offsetWidth; // reflow
+  el.classList.add(cls, "pulse");
+  setTimeout(() => el.classList.remove(cls), 450);
+}
 
-  if (playerChoice === computerChoice) {
-    statusHead.textContent = "Tie! " + statusHead.textContent;
-    flash(statusHead, "#f0e68c");
-    return;
-  }
-
-  if (beats[playerChoice] === computerChoice) {
-    playerScore += 1;
-    statusHead.textContent = "You win the round! " + statusHead.textContent;
-    flash(playerMoveEl, "#b2ffb2");
-  } else {
-    computerScore += 1;
-    statusHead.textContent = "CPU wins the round! " + statusHead.textContent;
-    flash(computerMoveEl, "#ffb2b2");
-  }
-
-  updateStatus();
-
-  // Check terminal condition
-  if (playerScore === WINNING_SCORE || computerScore === WINNING_SCORE) {
-    const winner =
-      playerScore > computerScore ? "🎉 You won the game!" : "💀 CPU won the game!";
-    statusHead.textContent = winner + ` Final score — You: ${playerScore} CPU: ${computerScore}`;
-    // Offer reset after short delay
-    setTimeout(resetGame, 2500);
+function addHistoryLine(result, player, cpu, roundNum) {
+  const li = document.createElement("li");
+  const badge =
+    result === "win"
+      ? "✅"
+      : result === "lose"
+      ? "❌"
+      : "⟲";
+  li.textContent = `R${roundNum}: ${badge} You ${formatMove(
+    player
+  )} vs CPU ${formatMove(cpu)}`;
+  historyList.prepend(li);
+  // Keep only last 10
+  while (historyList.children.length > 10) {
+    historyList.removeChild(historyList.lastChild);
   }
 }
 
-// Simple flash effect
-function flash(el, color) {
-  const orig = el.style.backgroundColor;
-  el.style.transition = "background-color 0.3s ease";
-  el.style.backgroundColor = color;
-  setTimeout(() => {
-    el.style.backgroundColor = orig;
-  }, 400);
+function burstConfetti() {
+  const count = 36;
+  const w = window.innerWidth;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement("div");
+    p.className = "particle";
+    p.style.left = Math.random() * w + "px";
+    p.style.background = `hsl(${Math.random() * 360}, 90%, 60%)`;
+    const fall = 600 + Math.random() * 800;
+    const drift = (Math.random() - 0.5) * 200;
+    p.animate(
+      [
+        { transform: "translate(0, -10px) rotate(0deg)", opacity: 1 },
+        { transform: `translate(${drift}px, ${fall}px) rotate(${720 *
+            Math.random()}deg)`, opacity: 0.1 }
+      ],
+      { duration: 1200 + Math.random() * 900, easing: "cubic-bezier(.2,.7,.2,1)" }
+    ).onfinish = () => p.remove();
+    document.body.appendChild(p);
+  }
 }
 
-// Reset everything
 function resetGame() {
   playerScore = 0;
   computerScore = 0;
-  updateStatus();
-  playerMoveEl.textContent = "";
-  computerMoveEl.textContent = "";
-  statusHead.textContent = "Make your move!";
+  gameOver = false;
+  updateScoreboard();
+  youMoveEl.textContent = "—";
+  cpuMoveEl.textContent = "—";
+  setStatus("Make your move!", `First to <span id="firstTo">${winningScore}</span> wins.`);
+  // clear history
+  historyList.innerHTML = "";
 }
 
-// Attach listeners
-rockBtn.addEventListener("click", () => playRound("rock"));
-paperBtn.addEventListener("click", () => playRound("paper"));
-scissorsBtn.addEventListener("click", () => playRound("scissors"));
+// --- Game Logic ---
+let roundsPlayed = 0;
 
-// Initial setup
-resetGame();
+function playRound(playerChoice) {
+  if (gameOver) return;
+  const cpuChoice = getComputerChoice();
+  roundsPlayed++;
+
+  youMoveEl.textContent = formatMove(playerChoice);
+  cpuMoveEl.textContent = formatMove(cpuChoice);
+
+  if (playerChoice === cpuChoice) {
+    setStatus("Tie round!", `First to <span>${winningScore}</span> wins.`);
+    addHistoryLine("tie", playerChoice, cpuChoice, roundsPlayed);
+    playSound("tie");
+    flash(youMoveEl, "flash-tie");
+    flash(cpuMoveEl, "flash-tie");
+    return;
+  }
+
+  if (beats[playerChoice] === cpuChoice) {
+    playerScore++;
+    updateScoreboard();
+    setStatus("You win the round!", `First to <span>${winningScore}</span> wins.`);
+    addHistoryLine("win", playerChoice, cpuChoice, roundsPlayed);
+    playSound("win");
+    flash(youMoveEl, "flash-win");
+  } else {
+    computerScore++;
+    updateScoreboard();
+    setStatus("CPU wins the round!", `First to <span>${winningScore}</span> wins.`);
+    addHistoryLine("lose", playerChoice, cpuChoice, roundsPlayed);
+    playSound("lose");
+    flash(cpuMoveEl, "flash-lose");
+  }
+
+  // Check game end
+  if (playerScore >= winningScore || computerScore >= winningScore) {
+    gameOver = true;
+    if (playerScore > computerScore) {
+      setStatus(`🎉 You won the game!`, `Final — You: <strong>${playerScore}</strong> • CPU: <strong>${computerScore}</strong>`);
+      burstConfetti();
+    } else {
+      setStatus(`💀 CPU won the game!`, `Final — You: <strong>${playerScore}</strong> • CPU: <strong>${computerScore}</strong>`);
+    }
+  }
+}
+
+// --- Events ---
+document.querySelectorAll(".btn.move").forEach((btn) => {
+  btn.addEventListener("click", () => playRound(btn.dataset.move));
+});
+
+document.addEventListener("keydown", (e) => {
+  const key = e.key.toLowerCase();
+  if (key === "r") btnRock.click();
+  if (key === "p") btnPaper.click();
+  if (key === "s") btnScissors.click();
+  if (key === "n") resetBtn.click();
+});
+
+bestOfSel.addEventListener("change", () => {
+  const v = Number(bestOfSel.value);
+  // "Best of X" -> first to (X+1)/2
+  winningScore = (v + 1) >> 1;
+  firstToEl.textContent = winningScore;
+  // If game already over, reset to start a new one with new target
+  resetGame();
+});
+
+resetBtn.addEventListener("click", () => {
+  roundsPlayed = 0;
+  resetGame();
+});
+
+// --- Init ---
+(function init() {
+  // sync best-of default
+  const v = Number(bestOfSel.value);
+  winningScore = (v + 1) >> 1;
+  firstToEl.textContent = winningScore;
+  resetGame();
+})();
